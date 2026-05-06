@@ -1,43 +1,68 @@
 # vertex-move-endgame-mark
 
-vertex-move-endgame-mark is a Elixir project for chess and game engines. It focuses on this technical goal: Build an Elixir toolkit that studies endgame behavior through round-trip fixtures, with lossless normalization checks and offline replay mode.
+`vertex-move-endgame-mark` explores chess and game engines in Elixir. The repository keeps the core rule set compact, then surrounds it with examples that show how the decisions move.
 
-## Why it exists
+## Vertex Move Endgame Mark Notes
 
-Small engineering tools are easiest to trust when their rules are explicit, testable, and cheap to run locally. This repository packages a focused model with fixture data and a local verification path so behavior can be reviewed without external services.
+The quickest review path is the verifier first, then the fixtures, then the operations note. That order makes it easy to see whether the code, data, and explanation still agree.
 
-## Features
+## Why This Exists
 
-- Deterministic policy scoring over fixture scenarios.
-- Clear accept or review decisions based on a documented threshold.
-- A command-line or local test path for quick validation.
-- Golden fixture data for repeatable checks.
-- Minimal dependencies and a compact project layout.
+The repository exists to keep a technical idea small enough to reason about. The implementation avoids external dependencies where possible, then uses fixtures to make changes easy to review.
 
-## Architecture Notes
+## Code Tour
 
-The core module exposes a small scoring API. Inputs are simple numeric signals: demand, capacity, latency, risk, and weight. The score uses a threshold of 180, risk penalty 7, latency penalty 2, and weight bonus 5. Tests exercise the public API against the fixture cases in `fixtures/cases.csv`.
+- `lib`: library code
+- `test`: language test directory
+- `fixtures`: compact golden scenarios
+- `examples`: expanded scenario set
+- `metadata`: project constants and verification metadata
+- `docs`: operations and extension notes
+- `scripts`: local verification and audit commands
 
-## Setup
+## Feature Notes
 
-Install the Elixir toolchain and run commands from the repository root.
+- Includes extended examples for turn flow, including `recovery` and `degraded`.
+- Documents search limits tradeoffs in `docs/operations.md`.
+- Runs locally with a single verification command and no external credentials.
+- Stores project constants and verification metadata in `metadata/project.json`.
+- Adds a repository audit script that checks structure before running the language verifier.
 
-## Usage
+## Implementation Notes
+
+The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps position state, move ranking, and turn flow in one explicit decision path. The threshold is 180, with risk penalty 7, latency penalty 2, and weight bonus 5. The Elixir project uses Mix and ExUnit with clear data maps for each scenario.
+
+## Local Setup
+
+Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
+
+## Example Scenarios
+
+`boundary` is the first example I would inspect because it lands on the `review` path with a score of 129. The broader file also keeps `degraded` at -29 and `recovery` at 234, which gives the model a useful low-to-high spread.
+
+## Try It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-The verification script builds or runs the project and checks the fixture decisions.
+This runs the language-level build or test path against the compact fixture set.
 
 ## Tests
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
 ```
 
-## Limitations And Roadmap
+The audit command checks repository structure and README constraints before it delegates to the verifier.
 
-- The fixture set is intentionally small so it can be audited by hand.
-- Future work could add richer domain-specific input adapters.
-- The model is a local demonstration and does not claim production use.
+## Roadmap
+
+- Add malformed input fixtures so the failure path is as visible as the happy path.
+- Split the scoring constants into a typed configuration object and validate it before use.
+- Add a comparison mode that shows how decisions change when one signal is adjusted.
+- Add one more chess and game engines fixture that focuses on a malformed or borderline input.
+
+## Boundaries
+
+The fixture set is deliberately small. That keeps the review surface clear, but it also means the model should not be treated as a complete domain simulator.
