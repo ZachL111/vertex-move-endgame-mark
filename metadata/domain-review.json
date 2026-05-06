@@ -1,0 +1,73 @@
+{
+  "repo": "vertex-move-endgame-mark",
+  "language": "Elixir",
+  "category": "Chess and game engines",
+  "goal": "Build an Elixir toolkit that studies endgame behavior through round-trip fixtures, with lossless normalization checks and offline replay mode.",
+  "review_model": {
+    "terms": [
+      "position pressure",
+      "move ordering",
+      "search width",
+      "endgame risk"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "position pressure",
+      "signal": 55,
+      "slack": 38,
+      "drag": 24,
+      "confidence": 63,
+      "score": 139,
+      "lane": "watch"
+    },
+    {
+      "name": "stress",
+      "focus": "move ordering",
+      "signal": 44,
+      "slack": 34,
+      "drag": 20,
+      "confidence": 62,
+      "score": 124,
+      "lane": "watch"
+    },
+    {
+      "name": "edge",
+      "focus": "search width",
+      "signal": 56,
+      "slack": 29,
+      "drag": 12,
+      "confidence": 74,
+      "score": 179,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "endgame risk",
+      "signal": 50,
+      "slack": 20,
+      "drag": 13,
+      "confidence": 89,
+      "score": 170,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "position pressure",
+      "signal": 57,
+      "slack": 35,
+      "drag": 20,
+      "confidence": 56,
+      "score": 145,
+      "lane": "ship"
+    }
+  ]
+}

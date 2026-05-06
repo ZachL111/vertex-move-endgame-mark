@@ -1,68 +1,40 @@
 # vertex-move-endgame-mark
 
-`vertex-move-endgame-mark` explores chess and game engines in Elixir. The repository keeps the core rule set compact, then surrounds it with examples that show how the decisions move.
+`vertex-move-endgame-mark` is a Elixir project in chess and game engines. Its focus is to build an Elixir toolkit that studies endgame behavior through round-trip fixtures, with lossless normalization checks and offline replay mode.
 
-## Vertex Move Endgame Mark Notes
+## Why It Exists
 
-The quickest review path is the verifier first, then the fixtures, then the operations note. That order makes it easy to see whether the code, data, and explanation still agree.
+The project exists to keep a narrow engineering decision visible and testable. For this repo, that decision is how position pressure and search width should influence a review result.
 
-## Why This Exists
+## Vertex Move Endgame Mark Review Notes
 
-The repository exists to keep a technical idea small enough to reason about. The implementation avoids external dependencies where possible, then uses fixtures to make changes easy to review.
+The first comparison I would make is `search width` against `move ordering` because it shows where the rule is most opinionated.
 
-## Code Tour
+## Features
 
-- `lib`: library code
-- `test`: language test directory
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
+- `fixtures/domain_review.csv` adds cases for position pressure and move ordering.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/vertex-move-endgame-walkthrough.md` walks through the case spread.
+- The Elixir code includes a review path for `search width` and `move ordering`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Feature Notes
+## Architecture Notes
 
-- Includes extended examples for turn flow, including `recovery` and `degraded`.
-- Documents search limits tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
-- Adds a repository audit script that checks structure before running the language verifier.
+The fixture data drives the tests. The code stays thin, while `metadata/domain-review.json` and `config/review-profile.json` explain what each case is meant to protect.
 
-## Implementation Notes
+The added Elixir path is deliberately direct, with fixtures doing most of the explaining.
 
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps position state, move ranking, and turn flow in one explicit decision path. The threshold is 180, with risk penalty 7, latency penalty 2, and weight bonus 5. The Elixir project uses Mix and ExUnit with clear data maps for each scenario.
-
-## Local Setup
-
-Clone the repository, enter the directory, and run the verifier. No database server, cloud account, or token is required.
-
-## Example Scenarios
-
-`boundary` is the first example I would inspect because it lands on the `review` path with a score of 129. The broader file also keeps `degraded` at -29 and `recovery` at 234, which gives the model a useful low-to-high spread.
-
-## Try It
+## Usage
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
-
 ## Tests
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+The check exercises the source code and the review fixture. `edge` is the high score at 179; `stress` is the low score at 124.
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
+## Limitations And Roadmap
 
-## Roadmap
-
-- Add malformed input fixtures so the failure path is as visible as the happy path.
-- Split the scoring constants into a typed configuration object and validate it before use.
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add one more chess and game engines fixture that focuses on a malformed or borderline input.
-
-## Boundaries
-
-The fixture set is deliberately small. That keeps the review surface clear, but it also means the model should not be treated as a complete domain simulator.
+No external service is required. A deeper version would add more negative cases and a clearer boundary around invalid input.
